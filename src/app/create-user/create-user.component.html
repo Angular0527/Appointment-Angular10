@@ -1,6 +1,7 @@
 <div class="example-container1">
   <mat-toolbar>
-    <span>Create an account</span>
+    <span *ngIf="handleUser === 'createUser'">Create an account</span>
+    <span *ngIf="handleUser === 'loginUser'">Login</span>
   </mat-toolbar>
   <mat-card class="my-card">
      <mat-card-content>
@@ -16,7 +17,8 @@
         </form>
      </mat-card-content>
      <mat-card-actions>
-        <button mat-raised-button  color="primary" (click)="onRegister()">Register</button>
+        <button  *ngIf="handleUser === 'createUser'" mat-raised-button  color="primary" (click)="onRegister()">Register</button>
+        <button  *ngIf="handleUser === 'loginUser'" mat-raised-button  color="primary" (click)="onLogin()">Login</button>
      </mat-card-actions>
   </mat-card>
 </div>

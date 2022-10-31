@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponentComponent } from './login-component/login-component.component';
 import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
 import { environment } from '../environments/environment';
 import { provideAnalytics,getAnalytics,ScreenTrackingService,UserTrackingService } from '@angular/fire/analytics';
@@ -40,7 +39,6 @@ const appRoutes : Routes =  [
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponentComponent,
     HeaderComponent,
     CreateUserComponent
   ],

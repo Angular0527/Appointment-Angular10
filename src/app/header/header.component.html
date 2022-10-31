@@ -5,13 +5,18 @@
     </button>
     <span>My App</span>
     <span class="example-spacer"></span>
-    <button mat-button color="primary">Login</button>
+    <button mat-button color="primary" (click)="onLogin()">Login</button>
     <button mat-button color="primary" (click)="onCreateAccount()">Create Account</button>
   </mat-toolbar>
 
 
   <div *ngIf="isCreateBtn">
-    <app-create-user></app-create-user>
+    <app-create-user [handleUser]="handleUser"></app-create-user>
+  </div>
+
+
+  <div *ngIf="isLoginBtn">
+    <app-create-user [handleUser]="handleUser"></app-create-user>
   </div>
 
 </div>

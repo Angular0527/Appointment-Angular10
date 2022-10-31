@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { AuthService } from '../auth.service';
+
 
 @Component({
   selector: 'app-create-user',
@@ -8,34 +9,30 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
   styleUrls: ['./create-user.component.css']
 })
 export class CreateUserComponent implements OnInit {
+  @Input()handleUser : String  = ''
   createAccountForm: FormGroup ;
   email = new FormControl('', [Validators.required, Validators.email]);
   hide = true;
-  constructor(private auth: AngularFireAuth) {
+  constructor(private authService: AuthService) {
     this.createAccountForm = new FormGroup({
     'email': new FormControl('', [Validators.required, Validators.email]),
     'password':new FormControl('', [Validators.required, Validators.minLength(5)]),
   })}
 
   ngOnInit(): void {
-    // this.createAccountForm = new FormGroup({
-    //   'email': new FormControl('', [Validators.required, Validators.email]),
-    //   'password':new FormControl('', [Validators.required, Validators.minLength(5)]),
-    // })
   }
-  getErrorMessage() {
-    if (this.email.hasError('required')) {
-      return 'You must enter a value';
-    }
-    return this.email.hasError('email') ? 'Not a valid email' : '';
 
-}
 onRegister() {
   const email = this.createAccountForm.value.email;
   const password = this.createAccountForm.value.password
-  this.auth.createUserWithEmailAndPassword(email,password).then((user) => {
-    console.log(user);
-  })
-  console.log(this.createAccountForm);
+  this.authService.createUser(email,password);
+}
+
+onLogin() {
+  const email = this.createAccountForm.value.email;
+  const password = this.createAccountForm.value.password;
+  this.authService.signInUser(email,password);
 }
 }
+
+
