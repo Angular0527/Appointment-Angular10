@@ -1,0 +1,22 @@
+<div class="example-container1">
+  <mat-toolbar>
+    <span>Create an account</span>
+  </mat-toolbar>
+  <mat-card class="my-card">
+     <mat-card-content>
+        <form [formGroup]="createAccountForm" (ngSubmit)='onRegister()'class="my-form">
+           <mat-form-field class="full-width">
+              <mat-label>Email</mat-label>
+              <input  matInput  placeholder="Email" formControlName="email" name="email">
+           </mat-form-field>
+           <mat-form-field class="full-width">
+              <mat-label>Password</mat-label>
+              <input  matInput type="password"  placeholder="Password" formControlName="password" name="password">
+           </mat-form-field>
+        </form>
+     </mat-card-content>
+     <mat-card-actions>
+        <button mat-raised-button  color="primary" (click)="onRegister()">Register</button>
+     </mat-card-actions>
+  </mat-card>
+</div>

@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "angular-appointments-app": {
+      "hosting": {
+        "appointment-app": [
+          "angular-appointments-app"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "angular-appointments-app"
+  }
+}

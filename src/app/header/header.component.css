@@ -1,0 +1,10 @@
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.header {
+  background-color:purple;
+  height:3rem;
+}
+
+
