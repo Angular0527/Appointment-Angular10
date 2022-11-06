@@ -29,18 +29,32 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
-
+import { AppointmentsComponent } from './appointments/appointments.component';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptorService } from './auth-interceptor';
+import { AuthGuard } from './auth.guard';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatListModule} from '@angular/material/list';
+import {MatButtonModule} from '@angular/material/button';
+import {MatGridListModule} from '@angular/material/grid-list';
+import { BarberServicesComponent } from './appointments/barber-services/barber-services.component';
+import { BarberShopEmployeesComponent } from './appointments/barber-shop-employees/barber-shop-employees.component';
+import {MatTableModule} from '@angular/material/table';
 
 const appRoutes : Routes =  [
   {path:'', component:HeaderComponent},
-  {path:'createUser', component:CreateUserComponent}
+  {path:'createUser', component:CreateUserComponent},
+  {path:'appointments', component:AppointmentsComponent, canActivate:[AuthGuard]}
 ]
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    CreateUserComponent
+    CreateUserComponent,
+    AppointmentsComponent,
+    BarberServicesComponent,
+    BarberShopEmployeesComponent,
   ],
   imports: [
     BrowserModule,
@@ -69,9 +83,16 @@ const appRoutes : Routes =  [
     AngularFirestoreModule,
     AngularFireStorageModule,
     AngularFireDatabaseModule,
+    HttpClientModule,
+    MatTabsModule,
+    MatListModule,
+    MatButtonModule,
+    MatCardModule,
+    MatGridListModule,
+    MatTableModule
   ],
   providers: [
-    ScreenTrackingService,UserTrackingService
+    ScreenTrackingService,UserTrackingService,{provide:HTTP_INTERCEPTORS,useClass:AuthInterceptorService, multi:true}
   ],
   bootstrap: [AppComponent]
 })

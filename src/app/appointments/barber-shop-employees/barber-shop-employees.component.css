@@ -1,0 +1,17 @@
+.example-card {
+  min-width: 250px;
+  max-width: 450px;
+  flex: 1 0 41%; /* explanation below */
+  margin: 10px;
+}
+.avatar {
+  margin:5px;
+}
+
+.items {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+

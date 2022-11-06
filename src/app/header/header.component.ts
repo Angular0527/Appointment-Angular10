@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Route, Router } from '@angular/router';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-header',
@@ -10,7 +11,7 @@ export class HeaderComponent implements OnInit {
   isCreateBtn : boolean = false;
   isLoginBtn: boolean = false;
   handleUser:String = '';
-  constructor(private router: Router) { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
   }
@@ -27,4 +28,8 @@ export class HeaderComponent implements OnInit {
     this.isCreateBtn = false;
   }
 
+
+  onLogOut () {
+    this.authService.signOutUser();
+  }
 }

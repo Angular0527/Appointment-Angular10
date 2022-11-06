@@ -1,0 +1,59 @@
+<div class="test">
+  <mat-toolbar color="primary" class="header">
+    <span class="example-spacer"></span>
+    <button mat-button color="primary" (click)="onCreateAppoitment()">Create an appoitment</button>
+    <button mat-button color="primary" (click)="onShowAppoitments()">Show appoitment</button>
+  </mat-toolbar>
+
+  <mat-tab-group #tabs >
+    <mat-tab label="Services">
+        <app-barber-services (navToServices)="onNavTo($event)"></app-barber-services>
+    </mat-tab>
+    <mat-tab  [disabled]='!tabBarber'  label="Barber">
+        <app-barber-shop-employees (navToCheckout)="onNavToSchedule($event)"></app-barber-shop-employees>
+    </mat-tab>
+      <mat-tab [disabled]='!tabSchedule'  label="Schedule">
+        <table mat-table [dataSource]="data" class="mat-elevation-z8 demo-table">
+          <ng-container matColumnDef="Monday">
+            <th mat-header-cell *matHeaderCellDef>Monday</th>
+             <td mat-cell *matCellDef="let element">
+              <button mat-button color="primary" (click)="onSelectHour(element)" >{{element.Monday}}</button>
+             </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="Tuesday">
+            <th mat-header-cell *matHeaderCellDef  >Tuesday</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-button color="primary">{{ element.Tuesday}}</button>
+            </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="Wednesday"  >
+            <th mat-header-cell *matHeaderCellDef >Wednesday</th>
+             <td mat-cell *matCellDef="let element" >
+              <button mat-button color="primary">{{  element.Wednesday}}</button>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="Thursday">
+            <th mat-header-cell *matHeaderCellDef >Thursday</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-button color="primary">{{element.Thursday}}</button>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="Friday">
+            <th mat-header-cell *matHeaderCellDef  >Friday</th>
+           <td mat-cell *matCellDef="let element">
+            <button mat-button color="primary" >{{ element.Friday}}</button>
+           </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </mat-tab>
+      <mat-tab [disabled]='!tabCheckout'  label="Checkout"> Content 4 </mat-tab>
+  </mat-tab-group>

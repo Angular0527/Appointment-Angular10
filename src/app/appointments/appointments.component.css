@@ -1,0 +1,65 @@
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.header {
+  background-color:purple;
+  height:3rem;
+}
+
+.services-small-box, .services-large-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.services-small-box {
+  height: 100px;
+  width: 100px;
+}
+
+.services-large-box {
+  height: 300px;
+  width: 300px;
+}
+
+.example-card {
+  min-width: 250px;
+  max-width: 450px;
+  flex: 1 0 41%; /* explanation below */
+  margin: 10px;
+}
+
+.example-header-image {
+  background-image: url('https://www.shutterstock.com/image-photo/portrait-copy-space-empty-place-600w-1092078692.jpg');
+  background-size: cover;
+}
+
+.avatar {
+  margin:5px;
+}
+
+
+.card-deck-container {
+  width: 100%;
+  max-width: 1200px;
+  position: relative;
+  border-radius: 2px;
+  padding: 10px 10px 30px;
+  margin: 10px 10px 10px 10px;
+  background-color: #f5f5f5;
+}
+
+.card-item {
+  padding: 3px 3px 3px 3px;
+}
+
+.items {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
