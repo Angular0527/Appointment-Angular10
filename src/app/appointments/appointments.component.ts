@@ -1,26 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatSelectionList } from '@angular/material/list';
 import { MatTabGroup } from '@angular/material/tabs';
+import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { Barber } from './appointemnts.inteface';
 import { AppointmentsService } from './appointments.service';
-
-export interface AppoitmentsTableData {
-  Monday: string;
-  Tuesday: string;
-  Wednesday: string;
-  Thursday: string;
-  Friday: string;
-}
+import { ScheduleService } from './schedule/schedule.service';
 
 
-const ELEMENT_DATA: AppoitmentsTableData[] = [
-  {Monday: '09-10', Tuesday:'09-10' ,Wednesday: '09-10',Thursday:'09-10', Friday:'09-10'},
-  {Monday: '10-11', Tuesday:'10-11' ,Wednesday: '',Thursday:'10-11', Friday:'10-11'},
-  {Monday: '11-12', Tuesday:'11-12' ,Wednesday: '11-12',Thursday:'11-12', Friday:'11-12'},
-  {Monday: '11-12', Tuesday:'11-12' ,Wednesday: '11-12',Thursday:'11-12', Friday:'11-12'},
-  {Monday: '09-10', Tuesday:'09-10' ,Wednesday: '09-10',Thursday:'09-10', Friday:'09-10'},
-];
 
 @Component({
   selector: 'app-appointments',
@@ -33,29 +21,26 @@ export class AppointmentsComponent implements OnInit {
   tabBarber = false;
   tabCheckout = false;
   tabSchedule = false;
-  selectedService: String = ''
-  selectedEmployee:String = ''
+  selectedService: string = ''
+  selectedEmployee:string = ''
   selected = 0;
-  data = ELEMENT_DATA;
-  displayedColumns: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-  constructor(private appointmentsService: AppointmentsService, private auth: AuthService) {
+
+  constructor(private appointmentsService: AppointmentsService, private scheduleService: ScheduleService, private router: Router) {
   }
 
   ngOnInit(): void {
-
-    // this.auth.user.subscribe(() => {
       this.appointmentsService.getCustomers().subscribe((data) => {
         console.log(data)
       })
-    // })
+
   }
   onCreateAppoitment () {
 
   }
 
   onShowAppoitments () {
-
+    this.router.navigate(['/showAppointments']);
   }
 
 
@@ -66,7 +51,7 @@ export class AppointmentsComponent implements OnInit {
   }
 
   onNavToSchedule (selectedEmployee: string) {
-    this.selectedService = selectedEmployee;
+    this.selectedEmployee = selectedEmployee;
     this.tabSchedule = true;
     this.tabs!.selectedIndex = 2;
   }
@@ -74,6 +59,7 @@ export class AppointmentsComponent implements OnInit {
   onSelectHour (data: any) {
     console.log(data)
   }
+
 
 
 }

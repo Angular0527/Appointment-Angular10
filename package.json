@@ -18,10 +18,12 @@
     "@angular/fire": "^7.4.1",
     "@angular/forms": "^14.2.0",
     "@angular/material": "^14.2.6",
+    "@angular/material-moment-adapter": "^15.0.0",
     "@angular/platform-browser": "^14.2.0",
     "@angular/platform-browser-dynamic": "^14.2.0",
     "@angular/router": "^14.2.0",
     "firebase": "^9.13.0",
+    "moment": "^2.29.4",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

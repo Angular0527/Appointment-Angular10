@@ -1,0 +1,36 @@
+<form style="flex: 1 0 20%;"[formGroup]="scheduleFormGroup" >
+  <div  class="wrapper">
+    <div style="margin:20px" >
+      <mat-card class="demo-inline-calendar-card"  formControlName="date">
+        <mat-calendar [dateFilter]="excludeWeekendDays" [selected]="scheduleFormGroup.get('date')?.value" (selectedChange)="datePickerDateChanged($event)"></mat-calendar>
+      </mat-card>
+    </div>
+    <div  class="userInputRegion">
+      <div class="hourSelect">
+        <mat-label style="margin-right:10px ;">Hour:</mat-label>
+        <mat-select [(ngModel)]="selectedValue" name="schedule" formControlName='hour' style="width:100px">
+          <mat-option *ngFor="let singleSchedule of scheduleArray" [value]="singleSchedule.value">
+            {{singleSchedule.viewValue}}
+          </mat-option>
+        </mat-select>
+      </div>
+      <mat-form-field appearance="fill">
+        <mat-label>Service</mat-label>
+        <input matInput [value]='service' style="width:100%" disabled>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Barber</mat-label>
+        <input matInput [value]='barber' style="width:100%" disabled>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput [value]='email' style="width:100%" disabled>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Name</mat-label>
+        <input formControlName="name" matInput style="width:100%">
+      </mat-form-field>
+      <button mat-button color="primary" (click)="onFinishReservation()" [disabled]="scheduleFormGroup.invalid">Finish Reservation</button>
+    </div>
+  </div>
+</form>

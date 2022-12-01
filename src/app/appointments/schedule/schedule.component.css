@@ -1,0 +1,45 @@
+.userInputRegion  {
+  flex-direction: column;
+  justify-content: space-between;
+  width:100px;
+  gap: 15px;
+}
+
+.demo-inline-calendar-card {
+  width: 300px;
+}
+
+.hourSelect {
+  display:flex;
+  margin:10px;
+}
+
+
+@media only screen and (min-width: 601px) {
+ .wrapper {
+  display:flex
+ }
+ .userInputRegion  {
+  flex-direction: column;
+  justify-content: space-between;
+  width:200px;
+  gap: 15px;
+}
+
+};
+
+/* If the screen size is 600px or less, set the font-size of <div> to 30px */
+@media only screen and (max-width: 600px) {
+  .wrapper {
+    display: grid;
+    margin-left:20px
+   }
+   .userInputRegion {
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width:250px;
+    gap: 15px;
+    margin-left:50px;
+   }
+}

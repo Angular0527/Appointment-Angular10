@@ -40,11 +40,19 @@ import {MatGridListModule} from '@angular/material/grid-list';
 import { BarberServicesComponent } from './appointments/barber-services/barber-services.component';
 import { BarberShopEmployeesComponent } from './appointments/barber-shop-employees/barber-shop-employees.component';
 import {MatTableModule} from '@angular/material/table';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {DateAdapter, MatNativeDateModule, MAT_DATE_LOCALE} from '@angular/material/core';
+import {MatSelectModule} from '@angular/material/select';
+import { ScheduleComponent } from './appointments/schedule/schedule.component';
+import { ShowAppointmentComponent } from './show-appointment/show-appointment.component';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+
 
 const appRoutes : Routes =  [
   {path:'', component:HeaderComponent},
   {path:'createUser', component:CreateUserComponent},
-  {path:'appointments', component:AppointmentsComponent, canActivate:[AuthGuard]}
+  {path:'appointments', component:AppointmentsComponent, canActivate:[AuthGuard]},
+  {path:'showAppointments', component:ShowAppointmentComponent, canActivate:[AuthGuard]}
 ]
 
 @NgModule({
@@ -55,6 +63,8 @@ const appRoutes : Routes =  [
     AppointmentsComponent,
     BarberServicesComponent,
     BarberShopEmployeesComponent,
+    ScheduleComponent,
+    ShowAppointmentComponent,
   ],
   imports: [
     BrowserModule,
@@ -89,10 +99,14 @@ const appRoutes : Routes =  [
     MatButtonModule,
     MatCardModule,
     MatGridListModule,
-    MatTableModule
+    MatTableModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSelectModule,
+    MatButtonToggleModule
   ],
   providers: [
-    ScreenTrackingService,UserTrackingService,{provide:HTTP_INTERCEPTORS,useClass:AuthInterceptorService, multi:true}
+    ScreenTrackingService,UserTrackingService,{provide:HTTP_INTERCEPTORS,useClass:AuthInterceptorService, multi:true},
   ],
   bootstrap: [AppComponent]
 })

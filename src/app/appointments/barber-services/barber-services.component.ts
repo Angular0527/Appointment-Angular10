@@ -26,4 +26,9 @@ export class BarberServicesComponent implements OnInit {
     // console.log(event);
   }
 
+
+  test(test : any) {
+    console.log(test);
+  }
+
 }
