@@ -78,7 +78,7 @@ export class ScheduleComponent implements OnInit , OnChanges {
     this.scheduleService.appointment.subscribe((response) => {
       this.scheduleServiceResponse = response;
       this.scheduleArray = [...this.schedule];
-      // this.setSchedule(moment()._d);
+      this.setSchedule(moment()._d);
     })
 
 

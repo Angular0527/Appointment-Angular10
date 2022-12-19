@@ -26,7 +26,7 @@ export class AppointmentsComponent implements OnInit {
   selected = 0;
 
 
-  constructor(private appointmentsService: AppointmentsService, private scheduleService: ScheduleService, private router: Router) {
+  constructor(private appointmentsService: AppointmentsService, private scheduleService: ScheduleService, private router: Router, private authService: AuthService) {
   }
 
   ngOnInit(): void {
@@ -58,6 +58,10 @@ export class AppointmentsComponent implements OnInit {
 
   onSelectHour (data: any) {
     console.log(data)
+  }
+
+  onLogOut () {
+    this.authService.signOutUser();
   }
 
 

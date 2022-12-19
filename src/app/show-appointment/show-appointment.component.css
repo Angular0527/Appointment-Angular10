@@ -1,3 +1,15 @@
 .datepicker {
   width:10rem;
 }
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+:host::ng-deep .mat-form-field-infix{
+  display: flex !important;
+}

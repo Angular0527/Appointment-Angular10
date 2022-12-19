@@ -15,6 +15,7 @@ import { Schedule } from '../appointments/schedule/schedule.component';
 import { MatSelect } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
 import { MatDatepickerInput } from '@angular/material/datepicker';
+import { Router } from '@angular/router';
 
 const moment = _rollupMoment || _moment;
 
@@ -29,6 +30,7 @@ const moment = _rollupMoment || _moment;
 })
 export class ShowAppointmentComponent implements OnInit {
   dateChanged : any;
+  @ViewChild('hourOption', {static: false}) hourOption: MatOption | undefined;
   @ViewChild('hourSelect', {static: false}) hourSelect: MatSelect | undefined
   @ViewChild('dateSelect', {static: false}) dateSelect: MatDatepickerInput<any> | undefined
   scheduleArray : Schedule[] = [];
@@ -40,6 +42,8 @@ export class ShowAppointmentComponent implements OnInit {
   date: FormControl = new FormControl();
   viewMode: string = 'normalMode';
   displayedColumns: string[] = ['barber', 'date', 'email', 'hour','name','service','btn'];
+  hourValue: String = '9';
+  selectedValue = [];
 
   schedule: Schedule[] = [
     {value: '9', viewValue: '9-10'},
@@ -53,13 +57,14 @@ export class ShowAppointmentComponent implements OnInit {
   ];
   dataSource: any | undefined;
 
-  constructor(private scheduleService: ScheduleService, private authService: AuthService) {
+  constructor(private scheduleService: ScheduleService, private authService: AuthService, private router: Router) {
 
    }
 
   ngOnInit(): void {
     this.email = localStorage.getItem('email');
     this.scheduleService.appointment.subscribe((response) => {
+      this.appointments = [];
       this.backendResponse = response;
       Object.values(response).forEach((val) => {
         if (val.email === this.email) {
@@ -68,17 +73,12 @@ export class ShowAppointmentComponent implements OnInit {
       })
       const datePipe = new DatePipe('en-US');
       const todayDate = datePipe.transform(new Date(),'yyyy-MM-dd') || ''
-      this.dataSource =  this.appointments.filter((entry) => entry.date >= todayDate);
+      const filteredResult =  this.appointments.filter((entry) => entry.date >= todayDate);
+      this.dataSource = filteredResult
+      filteredResult.forEach(() => {
+        this.selectedValue.push();
+      })
       this.scheduleArray = [...this.schedule];
-      // this.appointments.forEach((appointment) => {
-      //   if(appointment.email === this.email) {
-      //     this.scheduleArray.forEach((value,index) => {
-      //       if(value.value == appointment.hour) {
-      //         this.scheduleArray.splice(index,1);
-      //       }
-      //     })
-      //   }
-      // })
     })
   }
 
@@ -99,13 +99,10 @@ export class ShowAppointmentComponent implements OnInit {
   onDeleteEntry (entryData : any) {
     const appointmentsData = [...this.appointments];
     const objectKey = this.getEntryName(entryData);
+    const datePipe = new DatePipe('en-US');
+    const todayDate = datePipe.transform(new Date(),'yyyy-MM-dd') || ''
     this.scheduleService.deleteAppointment(objectKey).subscribe(() => {
-      if(appointmentsData.length === 1) {
-        this.dataSource = undefined;
-      } else {
-        this.dataSource = appointmentsData.filter((entry) => entry !== entryData);
-      }
-
+      this.getAppointemnts();
     })
 
   };
@@ -122,8 +119,18 @@ export class ShowAppointmentComponent implements OnInit {
   }
 
   onEditEntry (element: any) {
+    this.dateChanged = element.date;
     this.barber = element.barber;
     this.viewMode = 'editMode'
+    this.scheduleArray = [...this.schedule];
+    this.appointments.filter((entry) => entry.barber === this.barber && entry.date === element.date).forEach((entry) => {
+     this.scheduleArray.forEach((value,index) => {
+       if(value.value == entry.hour) {
+         this.scheduleArray.splice(index,1);
+       }
+     })
+    })
+
   }
 
 
@@ -137,47 +144,40 @@ export class ShowAppointmentComponent implements OnInit {
   }
 
 
-  onSaveEntry(element: any) {
+  onSaveEntry(element: any, index: number) {
+    //TO DO to add filtering for schedule array based on his.selectedValue[index]
+    console.log(this.selectedValue[index])
     const entryName = this.getEntryName(element);
    const hour = this.hourSelect?.ngControl.control?.value
    let updatedObject = {
     barber: element.barber,
     date: this.dateChanged,
     email: element.email,
-    hour: hour,
+    hour:  this.hourValue,
     name: element.name,
     service: element.service
    }
-   const appointmentsData = [...this.appointments];
-   let indexArr = 0;
-   const datePipe = new DatePipe('en-US');
-   const todayDate = datePipe.transform(new Date(),'yyyy-MM-dd') || ''
-   const futureAppointments =  this.appointments.filter((entry) => entry.date >= todayDate);
-   const excludeData = futureAppointments.filter((entry,index) => {
-    if(entry !== element) {
-      return true;
-    } else {
-      indexArr = index;
-    }
-
-   });
-   const insert = (arr: string | any[], index: any, newItem: any) => [
-    // part of the array before the specified index
-    ...arr.slice(0, index),
-    // inserted item
-    newItem,
-    // part of the array after the specified index
-    ...arr.slice(index)
-  ]
    this.scheduleService.updateAppointment(updatedObject,entryName).subscribe((result) => {
-    const data = insert(excludeData, indexArr,result);
-    this.dataSource = data;
+
+    this.getAppointemnts();
     this.viewMode = 'normalMode'
    })
     // this.hourSelect?.ngControl?.viewModel
     // const datePipe = new DatePipe('en-US');
     // const date = datePipe.transform(this.date.value._d,'yyyy-MM-dd') || ''
     // console.log(date);
+  }
+
+  getAppointemnts() {
+    this.scheduleService.getAppointments().subscribe((result) => {
+      this.scheduleService.appointment.next(result);
+
+    });
+  }
+
+  onSelectionChange(event : any) {
+    // this.hourValue = document.?getElementById(this.hourOption?.id).?innerText
+    // console.log(event);
   }
 
   excludeWeekendDays = (date: any): boolean => {
@@ -206,6 +206,19 @@ export class ShowAppointmentComponent implements OnInit {
     console.log(date);
   }
 
+  onLogOut () {
+    this.authService.signOutUser();
+  }
+
+
+  onCreateAppoitment() {
+    this.router.navigate(['/appointments']);
+  }
+
 
 
 }
+function getElementById(id: string | undefined) {
+  throw new Error('Function not implemented.');
+}
+

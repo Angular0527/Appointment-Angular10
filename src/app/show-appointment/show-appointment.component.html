@@ -1,8 +1,9 @@
 
-<div>
+<div class="responsive">
   <mat-toolbar color="primary" class="header">
     <span class="example-spacer"></span>
-    <button mat-button color="primary" >Create Appointment</button>
+    <button mat-raised-button color="primary" style="margin-right:5px" (click)="onCreateAppoitment()">Create Appointment</button>
+    <button  mat-raised-button  color="primary" (click)="onLogOut()">Logout</button>
   </mat-toolbar>
   <mat-button-toggle-group  (change)="onToogleButtonChangeEvent($event)" value="future" aria-label="Favorite Color">
     <mat-button-toggle  value="past">PAST</mat-button-toggle>
@@ -40,14 +41,24 @@
 
     <ng-container matColumnDef="hour">
       <th mat-header-cell *matHeaderCellDef> Hour </th>
-      <td mat-cell *matCellDef="let element">
+      <td mat-cell *matCellDef="let element,let i = index;">
         <div *ngIf="viewMode === 'normalMode'"> {{element.hour}}</div>
           <div *ngIf="viewMode === 'editMode'">
-            <mat-select #hourSelect [(ngModel)]="selectedValue" name="schedule"  style="width:100px">
-              <mat-option  *ngFor="let singleSchedule of scheduleArray" [value]="singleSchedule.value">
+            {{i}}
+            <mat-select (openedChange)="onSelectionChange($event)" #hourSelect [(ngModel)]="selectedValue[i]" name="schedule"  style="width:100px">
+              <mat-option id="test123"  #hourOption *ngFor="let singleSchedule of scheduleArray" [value]="singleSchedule.value">
                 {{singleSchedule.viewValue}}
               </mat-option>
             </mat-select>
+            <!-- <mat-form-field appearance="fill">
+              <mat-label>Hour</mat-label>
+            <select matNativeControl (change)="onSelectionChange($event.target.value)" [(ngModel)]="selectedValue" name="car">
+              <option value="" selected></option>
+              <option *ngFor="let singleSchedule of scheduleArray" [value]="element.hour">
+                {{singleSchedule.viewValue}}
+              </option>
+            </select>
+          </mat-form-field> -->
           </div>
           <!-- <ng-container *ngIf="viewMode === 'editMode'" >
             <div>
@@ -69,16 +80,17 @@
 
     <ng-container matColumnDef="btn">
       <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let element">
+      <td mat-cell *matCellDef="let element ,let i = index;">
         <div *ngIf="showButtons">
           <button *ngIf="viewMode === 'normalMode'" mat-button color="primary" (click)="onEditEntry(element)" >Edit</button>
-          <button *ngIf="viewMode === 'editMode'" mat-button color="primary" (click)="onSaveEntry(element)" >Save</button>
+          <button *ngIf="viewMode === 'editMode'" mat-button color="primary" (click)="onSaveEntry(element, i)" >Save</button>
           <button *ngIf="viewMode === 'editMode'" mat-button color="primary" (click)="onCancelEdit(element)" >Cancel edit</button>
           <button mat-button color="primary"  color="warn"  (click)="onDeleteEntry(element)" >Delete</button>
         </div>
 
         </td>
     </ng-container>
+
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row (click)="onRowClick($event)" *matRowDef="let row; columns: displayedColumns;"></tr>

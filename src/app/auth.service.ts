@@ -19,10 +19,7 @@ export class AuthService {
 
 
   createUser(email: string,password: string) {
-    this.auth.createUserWithEmailAndPassword(email,password).then((user) => {
-      this.authUser(user, password);
-      // this.router.navigate(['/appointments']);
-    })
+   return this.auth.createUserWithEmailAndPassword(email,password)
   }
 
   signInUser(email:string = this.user!.email, password: string = this.user!.password) {
@@ -57,7 +54,7 @@ export class AuthService {
   }
 
   getToken () : string {
-    return this.user._token || '';
+    return localStorage.getItem('token') || '';
   }
 }
  

@@ -15,20 +15,8 @@ export class BarberServicesComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onSelectEmployee(event: any) {
-    if( this.services?.selectedOptions.selected[0]?.value !== undefined) {
-      this.navToServices.emit( this.services?.selectedOptions.selected[0]?.value)
-    }
-
-    // this.tabBarber = true;
-    // this.tabs!.selectedIndex = 1;
-    // this.tabs!.focusTab(1)
-    // console.log(event);
-  }
-
-
-  test(test : any) {
-    console.log(test);
+  onSelectOption() {
+    this.navToServices.emit( this.services?.selectedOptions.selected[0]?.value)
   }
 
 }

@@ -1,6 +1,5 @@
-<mat-selection-list #services [multiple]="false" (changeSelection)="test($event)">
+<mat-selection-list #services [multiple]="false" (selectionChange)="onSelectOption()">
   <mat-list-option *ngFor="let service of typeOfServices" [value]="service" >
     {{service}}
   </mat-list-option>
 </mat-selection-list>
-<button  mat-button color="primary" style="margin-top:10px" (click)="onSelectEmployee($event)">Select Employee</button>

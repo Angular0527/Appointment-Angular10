@@ -8,9 +8,9 @@ import { AuthService } from '../auth.service';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  isCreateBtn : boolean = false;
-  isLoginBtn: boolean = false;
-  handleUser:String = '';
+  isCreateBtn : boolean = true;
+  isLoginBtn: boolean = true;
+  handleUser:String = 'loginUser';
   constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
@@ -26,10 +26,5 @@ export class HeaderComponent implements OnInit {
     this.handleUser = 'loginUser';
     this.isLoginBtn = true;
     this.isCreateBtn = false;
-  }
-
-
-  onLogOut () {
-    this.authService.signOutUser();
   }
 }

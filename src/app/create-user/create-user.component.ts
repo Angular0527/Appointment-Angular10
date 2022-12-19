@@ -27,7 +27,16 @@ export class CreateUserComponent implements OnInit {
 onRegister() {
   const email = this.createAccountForm.value.email;
   const password = this.createAccountForm.value.password
-  this.authService.createUser(email,password);
+  this.authService.createUser(email,password).then((result) => {
+    this.authService.authUser(result,password);
+    this.scheduleService.getAppointments().pipe(first()).subscribe((result) => {
+      if(result !== null) {
+        this.scheduleService.appointment.next(result);
+      }
+    })
+    this.router.navigate(['/appointments']);
+  });
+
 }
 
 onLogin() {
