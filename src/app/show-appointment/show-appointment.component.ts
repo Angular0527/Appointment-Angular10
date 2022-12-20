@@ -29,7 +29,7 @@ const moment = _rollupMoment || _moment;
   ],
 })
 export class ShowAppointmentComponent implements OnInit {
-  dateChanged : any;
+  dateChanged : any = '';
   @ViewChild('hourOption', {static: false}) hourOption: MatOption | undefined;
   @ViewChild('hourSelect', {static: false}) hourSelect: MatSelect | undefined
   @ViewChild('dateSelect', {static: false}) dateSelect: MatDatepickerInput<any> | undefined
@@ -43,7 +43,7 @@ export class ShowAppointmentComponent implements OnInit {
   viewMode: string = 'normalMode';
   displayedColumns: string[] = ['barber', 'date', 'email', 'hour','name','service','btn'];
   hourValue: String = '9';
-  selectedValue = [];
+  selectedValue : any = [];
 
   schedule: Schedule[] = [
     {value: '9', viewValue: '9-10'},
@@ -119,7 +119,7 @@ export class ShowAppointmentComponent implements OnInit {
   }
 
   onEditEntry (element: any) {
-    this.dateChanged = element.date;
+    // this.dateChanged = element.date;
     this.barber = element.barber;
     this.viewMode = 'editMode'
     this.scheduleArray = [...this.schedule];
@@ -140,20 +140,18 @@ export class ShowAppointmentComponent implements OnInit {
 
 
   onCancelEdit() {
-    this.viewMode = 'normalMode'
+    this.viewMode = 'normalMode';
+    this.selectedValue = [];
   }
 
 
   onSaveEntry(element: any, index: number) {
-    //TO DO to add filtering for schedule array based on his.selectedValue[index]
-    console.log(this.selectedValue[index])
     const entryName = this.getEntryName(element);
-   const hour = this.hourSelect?.ngControl.control?.value
    let updatedObject = {
     barber: element.barber,
     date: this.dateChanged,
     email: element.email,
-    hour:  this.hourValue,
+    hour: this.selectedValue[index],
     name: element.name,
     service: element.service
    }
@@ -162,10 +160,6 @@ export class ShowAppointmentComponent implements OnInit {
     this.getAppointemnts();
     this.viewMode = 'normalMode'
    })
-    // this.hourSelect?.ngControl?.viewModel
-    // const datePipe = new DatePipe('en-US');
-    // const date = datePipe.transform(this.date.value._d,'yyyy-MM-dd') || ''
-    // console.log(date);
   }
 
   getAppointemnts() {
@@ -175,9 +169,21 @@ export class ShowAppointmentComponent implements OnInit {
     });
   }
 
-  onSelectionChange(event : any) {
-    // this.hourValue = document.?getElementById(this.hourOption?.id).?innerText
-    // console.log(event);
+  onDisableValue(index: number) {
+    console.log(index);
+  }
+
+  onSelectionChange(element : any) {
+    if(this.dateChanged !== '') {
+      this.scheduleArray = [...this.schedule];
+      this.appointments.filter((entry) => entry.barber === this.barber && entry.date === element.date).forEach((entry) => {
+       this.scheduleArray.forEach((value,index) => {
+         if(value.value == entry.hour) {
+           this.scheduleArray.splice(index,1);
+         }
+       })
+      })
+    }
   }
 
   excludeWeekendDays = (date: any): boolean => {
@@ -189,7 +195,8 @@ export class ShowAppointmentComponent implements OnInit {
 
   }
 
-  onDateChanged(date: any) {
+  onDateChanged(date: any,  index: number) {
+    this.selectedValue[index] = 0;
     const datePipe = new DatePipe('en-US');
     const formattedDate = datePipe.transform( date.value._d,'yyyy-MM-dd') || '';
     this.dateChanged = formattedDate;

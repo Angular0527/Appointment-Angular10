@@ -20,12 +20,12 @@
 
     <ng-container matColumnDef="date">
       <th mat-header-cell *matHeaderCellDef> Date </th>
-      <td mat-cell *matCellDef="let element">
+      <td mat-cell *matCellDef="let element, let i = index;">
         <div *ngIf="viewMode === 'normalMode'">  {{element.date | date:'MM/dd/yyyy' }}</div>
         <div *ngIf="viewMode === 'editMode'"  class="datepicker">
           <mat-form-field *ngIf="viewMode === 'editMode'"  class="datepicker">
             <mat-label>Change date</mat-label>
-            <input #dateSelect  matInput (dateChange)="onDateChanged($event)" [matDatepickerFilter]="excludeWeekendDays" [matDatepicker]="dp" [value]="element.date">
+            <input #dateSelect  matInput (dateChange)="onDateChanged($event, i)" [matDatepickerFilter]="excludeWeekendDays" [matDatepicker]="dp" [value]="element.date">
             <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
             <mat-datepicker    #dp></mat-datepicker>
           </mat-form-field>
@@ -44,8 +44,7 @@
       <td mat-cell *matCellDef="let element,let i = index;">
         <div *ngIf="viewMode === 'normalMode'"> {{element.hour}}</div>
           <div *ngIf="viewMode === 'editMode'">
-            {{i}}
-            <mat-select (openedChange)="onSelectionChange($event)" #hourSelect [(ngModel)]="selectedValue[i]" name="schedule"  style="width:100px">
+            <mat-select (openedChange)="onSelectionChange(element)" #hourSelect [(ngModel)]="selectedValue[i]" name="schedule"  style="width:100px">
               <mat-option id="test123"  #hourOption *ngFor="let singleSchedule of scheduleArray" [value]="singleSchedule.value">
                 {{singleSchedule.viewValue}}
               </mat-option>
@@ -83,7 +82,7 @@
       <td mat-cell *matCellDef="let element ,let i = index;">
         <div *ngIf="showButtons">
           <button *ngIf="viewMode === 'normalMode'" mat-button color="primary" (click)="onEditEntry(element)" >Edit</button>
-          <button *ngIf="viewMode === 'editMode'" mat-button color="primary" (click)="onSaveEntry(element, i)" >Save</button>
+          <button *ngIf="viewMode === 'editMode'" mat-button color="primary" [disabled]="onDisableValue(i)" (click)="onSaveEntry(element, i)" >Save</button>
           <button *ngIf="viewMode === 'editMode'" mat-button color="primary" (click)="onCancelEdit(element)" >Cancel edit</button>
           <button mat-button color="primary"  color="warn"  (click)="onDeleteEntry(element)" >Delete</button>
         </div>
