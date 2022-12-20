@@ -149,7 +149,7 @@ export class ShowAppointmentComponent implements OnInit {
     const entryName = this.getEntryName(element);
    let updatedObject = {
     barber: element.barber,
-    date: this.dateChanged,
+    date: this.dateChanged !== ''?  this.dateChanged : element.date,
     email: element.email,
     hour: this.selectedValue[index],
     name: element.name,
@@ -168,11 +168,6 @@ export class ShowAppointmentComponent implements OnInit {
 
     });
   }
-
-  onDisableValue(index: number) {
-    console.log(index);
-  }
-
   onSelectionChange(element : any) {
     if(this.dateChanged !== '') {
       this.scheduleArray = [...this.schedule];
