@@ -54,7 +54,7 @@ jobs:
         run: npm run build
       # ddeploy the app artifact to firebase
       - name: Deploy angular app to Firebase
-        uses: w9jds/firebase-action@main
+        uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting
         env:
