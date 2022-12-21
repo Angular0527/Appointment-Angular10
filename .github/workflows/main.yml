@@ -27,18 +27,18 @@ jobs:
         run: npm install
       # Runs a set of commands to build
       - name: Build
-        run: npm run build 
+        run: npm run build
     # sotre the artifact
       - name: Archive Production Artifact
         uses: actions/upload-artifact@master
         with:
           name: public
           path: ./public
-  # deploy job   
+  # deploy job
   deploy:
     name: Deploy to firebase
     runs-on: ubuntu-latest
-    # only run if build job complte successfully 
+    # only run if build job complte successfully
     needs: [build]
     steps:
       # building the app before deploy
@@ -58,4 +58,4 @@ jobs:
         with:
           args: deploy --only hosting
         env:
-          FIREBASE_TOKEN: ${{ secrets.firebase_token }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
