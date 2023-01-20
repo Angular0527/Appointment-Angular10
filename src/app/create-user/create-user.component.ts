@@ -20,6 +20,9 @@ export class CreateUserComponent implements OnInit {
     'email': new FormControl('', [Validators.required, Validators.email]),
     'password':new FormControl('', [Validators.required, Validators.minLength(5)]),
   })}
+  authFailed = false;
+  closeErrorDialogIcon="margin-top:0.4rem;margin-right:0.8rem;font-size:1.3rem;"
+  errorMsgText= "";
 
   ngOnInit(): void {
   }
@@ -35,6 +38,10 @@ onRegister() {
       }
     })
     this.router.navigate(['/appointments']);
+  })
+  .catch((error) => {
+    this.errorMsgText = "User Already Exists, try to login"
+    this.authFailed = true;
   });
 
 }
@@ -50,9 +57,23 @@ onLogin() {
       }
     })
     this.router.navigate(['/appointments']);
+  }).catch((error) => {
+    console.log(error)
+    if(error.message.split('not-found').length > 1) {
+      this.errorMsgText = "User doesn't exist, try to register"
+    } else {
+      this.errorMsgText = "Invalid username or password"
+    }
+
+    this.authFailed = true;
   });
   setInterval(() => this.authService.signInUser().then((result) => {
     this.authService.authUser(result,password)}),3540000)
+}
+
+
+closeErrorDialog () {
+  this.authFailed = false;
 }
 
 

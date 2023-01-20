@@ -51,9 +51,10 @@ export class AppointmentsComponent implements OnInit {
   }
 
   onNavToSchedule (selectedEmployee: string) {
-    this.selectedEmployee = selectedEmployee;
+
     this.tabSchedule = true;
     this.tabs!.selectedIndex = 2;
+    this.selectedEmployee = selectedEmployee;
   }
 
   onSelectHour (data: any) {

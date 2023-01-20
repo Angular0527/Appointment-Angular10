@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AppointmentServiceObject } from 'src/app/appointment-service-object';
@@ -39,6 +39,7 @@ export interface Schedule {
 
 export class ScheduleComponent implements OnInit , OnChanges {
   scheduleArray : Schedule[] = [];
+  testArray: Schedule[] = [];
   setData: Boolean = true;
   scheduleServiceResponse : Object = {};
   email: string | null  = '';
@@ -57,7 +58,7 @@ export class ScheduleComponent implements OnInit , OnChanges {
     {value: '16', viewValue: '16-17'},
   ];
   scheduleFormGroup: FormGroup ;
-  constructor(private authService: AuthService, private scheduleService: ScheduleService,  private router: Router) {
+  constructor(private authService: AuthService, private scheduleService: ScheduleService,  private router: Router, private cd: ChangeDetectorRef) {
     this.scheduleFormGroup = new FormGroup({
       'name': new FormControl('', [Validators.required, Validators.minLength(5)]),
       'hour': new FormControl('', [Validators.required]),
@@ -65,9 +66,20 @@ export class ScheduleComponent implements OnInit , OnChanges {
     });
   }
   ngOnChanges(changes: SimpleChanges): void {
-    if(this.barber !== '' && this.setData) {
-      this.setSchedule(moment()._d);
-      this.setData = false;
+    if(changes['barber']?.currentValue !== '') {
+      this.scheduleArray = [...this.schedule];
+      this.scheduleFormGroup.value.hour = ''
+
+      this.selectedValue = '';
+      const nowHour = new Date().getHours();
+      if(nowHour >= 16) {
+        this.setSchedule(moment().add(1,'days')._d);
+        this.scheduleFormGroup.get('date')?.setValue(moment().add(1,'days')._d)
+      } else {
+        this.setSchedule(moment()._d);
+        this.scheduleFormGroup.get('date')?.setValue(moment()._d)
+      }
+
     }
 
   }
@@ -78,18 +90,36 @@ export class ScheduleComponent implements OnInit , OnChanges {
     this.scheduleService.appointment.subscribe((response) => {
       this.scheduleServiceResponse = response;
       this.scheduleArray = [...this.schedule];
-      this.setSchedule(moment()._d);
+      const nowHour = new Date().getHours();
+      if(nowHour >= 16) {
+        this.setSchedule(moment().add(1,'days')._d);
+        this.scheduleFormGroup.get('date')?.setValue(moment().add(1,'days')._d)
+      } else {
+        this.setSchedule(moment()._d);
+        this.scheduleFormGroup.get('date')?.setValue(moment()._d)
+      }
+      // this.setSchedule(moment()._d);
     })
 
 
   }
 
-  excludeWeekendDays = (d: any): boolean => {
-    const day = d.weekday();
-    return day !== 0 && day !== 6;
+
+  excludeWeekendDays = (date: any): boolean => {
+    const todayDate = new Date();
+    const yesterdayDate = todayDate.setDate(todayDate.getDate() - 1);
+    const day = date.weekday();
+    const nowHour = new Date().getHours();
+    if(this.compateDates(date._d, new Date().toDateString())) {
+      if(nowHour >= 16) {
+        return false;
+      }
+}
+    return day !== 0 && day !== 6 && date._d > yesterdayDate;
   }
   datePickerDateChanged (date: any) {
     this.scheduleFormGroup.get('date')?.setValue(date._d);
+    this.scheduleFormGroup.value.hour = ''
     this.scheduleArray = [...this.schedule];
     this.setSchedule(date._d);
 
@@ -130,15 +160,35 @@ export class ScheduleComponent implements OnInit , OnChanges {
 
 
 setSchedule (date: Date ) {
+  let reservedHours : any = [];
+  this.testArray = [...this.scheduleArray]
   Object.values(this.scheduleServiceResponse).forEach((object) => {
     if(object.barber === this.barber && this.compateDates(date,object.date)) {
       this.scheduleArray.forEach((value,index) => {
         if(value.value == object.hour) {
-          this.scheduleArray.splice(index,1);
+          reservedHours.push(value.value);
         }
       })
     }
   })
+  // this.scheduleArray = this.scheduleArray.filter((value) => {
+  //   return !reservedHours.includes(value.value);
+  // })
+  // reservedHours = [];
+
+  if (this.compateDates(date, new Date().toDateString())) {
+    const nowHour = new Date().getHours()
+    this.scheduleArray.forEach((value,index) => {
+      if(parseInt(value.value) <= nowHour) {
+        reservedHours.push(value.value);
+      }
+    })
+  }
+  this.scheduleArray = this.testArray.filter((value) => {
+    return !reservedHours.includes(value.value);
+  })
+  reservedHours = [];
+
 
 }
 

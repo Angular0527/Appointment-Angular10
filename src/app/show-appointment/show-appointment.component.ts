@@ -44,6 +44,7 @@ export class ShowAppointmentComponent implements OnInit {
   displayedColumns: string[] = ['barber', 'date', 'email', 'hour','name','service','btn'];
   hourValue: String = '9';
   selectedValue : any = [];
+  selectedDateChange: any = '';
 
   schedule: Schedule[] = [
     {value: '9', viewValue: '9-10'},
@@ -73,7 +74,8 @@ export class ShowAppointmentComponent implements OnInit {
       })
       const datePipe = new DatePipe('en-US');
       const todayDate = datePipe.transform(new Date(),'yyyy-MM-dd') || ''
-      const filteredResult =  this.appointments.filter((entry) => entry.date >= todayDate);
+      const filteredResult =  this.appointments.filter((entry) => entry.date >= todayDate && this.filterAppointemntsByHour(entry, todayDate, true))
+                                                .sort((a,b)=>new Date(a.date).getTime()- new Date(b.date).getTime());
       this.dataSource = filteredResult
       filteredResult.forEach(() => {
         this.selectedValue.push();
@@ -82,15 +84,33 @@ export class ShowAppointmentComponent implements OnInit {
     })
   }
 
+
+  filterAppointemntsByHour (entry : any, todayDate: any, hourFlag: boolean) {
+    const nowHour = new Date().getHours()
+    if(hourFlag) {
+      if(entry.date === todayDate && parseInt(entry.hour) < nowHour) {
+        return false;
+     }
+    } else {
+      if (entry.date === todayDate && parseInt(entry.hour) <= nowHour) {
+        return false;
+     }
+    }
+
+    return true;
+  }
+
   onToogleButtonChangeEvent(event: any)  {
     const appointmentsData = [...this.appointments];
     const datePipe = new DatePipe('en-US');
-    const todayDate = datePipe.transform(new Date(),'yyyy-MM-dd') || ''
-    if(event.value === "future") {
-      this.dataSource = appointmentsData.filter((entry) => entry.date >= todayDate);
+    const todayDate = datePipe.transform(new Date(), 'yyyy-MM-dd') || ''
+    if (event.value === "future") {
+      this.dataSource = appointmentsData.filter((entry) => entry.date >= todayDate && this.filterAppointemntsByHour(entry, todayDate,true))
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());;
       this.showButtons = true;
     } else {
-      this.dataSource = appointmentsData.filter((entry) => entry.date < todayDate);
+      this.dataSource = appointmentsData.filter((entry) => entry.date <= todayDate && this.filterAppointemntsByHour(entry, todayDate, false))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());;
       this.showButtons = false;
     }
   }
@@ -169,47 +189,102 @@ export class ShowAppointmentComponent implements OnInit {
     });
   }
   onSelectionChange(element : any) {
-    if(this.dateChanged !== '') {
+    if(this.dateChanged == '') {
       this.scheduleArray = [...this.schedule];
+      let reservedHours: any = [];
+      const nowHour = new Date().getHours()
       this.appointments.filter((entry) => entry.barber === this.barber && entry.date === element.date).forEach((entry) => {
-       this.scheduleArray.forEach((value,index) => {
-         if(value.value == entry.hour) {
-           this.scheduleArray.splice(index,1);
-         }
-       })
+        this.scheduleArray.forEach((value, index) => {
+          if (value.value == entry.hour ) {
+            reservedHours.push(value.value);
+          }
+        })
       })
+
+      if(this.compateDates(new Date(element.date), new Date().toDateString())) {
+        this.scheduleArray.forEach((value, index) => {
+          if (parseInt(value.value) <= nowHour) {
+            reservedHours.push(value.value);
+          }
+        })
+      }
+
+     let uniqReservredHours = [...new Set(reservedHours)];
+
+      this.scheduleArray = this.scheduleArray.filter((value) => {
+        return !uniqReservredHours.includes(value.value);
+      })
+      reservedHours = 0;
     }
   }
 
   excludeWeekendDays = (date: any): boolean => {
     if(date !== undefined) {
+      const todayDate = new Date();
+      const yesterdayDate = todayDate.setDate(todayDate.getDate() - 1);
       const day = date.weekday();
-      return day !== 0 && day !== 6;
+      const nowHour = new Date().getHours();
+      if(this.compateDates(date._d, new Date().toDateString())) {
+            if(nowHour >= 16) {
+              return false;
+            }
+      }
+      return day !== 0 && day !== 6 && date._d > yesterdayDate;
     }
     return false;
 
   }
 
-  onDateChanged(date: any,  index: number) {
+  onDateChanged(date: any, index: number) {
     this.selectedValue[index] = 0;
+    let reservedHours: any = [];
+    const nowHour = new Date().getHours()
     const datePipe = new DatePipe('en-US');
-    const formattedDate = datePipe.transform( date.value._d,'yyyy-MM-dd') || '';
+    const formattedDate = datePipe.transform(date.value._d, 'yyyy-MM-dd') || '';
     this.dateChanged = formattedDate;
-    const todayDate = datePipe.transform(new Date(),'yyyy-MM-dd') || ''
-   this.scheduleArray = [...this.schedule];
-   this.appointments.filter((entry) => entry.barber === this.barber && entry.date === formattedDate).forEach((entry) => {
-    this.scheduleArray.forEach((value,index) => {
-      if(value.value == entry.hour) {
-        this.scheduleArray.splice(index,1);
-      }
+    this.selectedDateChange = date.value._d;
+    const todayDate = datePipe.transform(new Date(), 'yyyy-MM-dd') || ''
+    this.scheduleArray = [...this.schedule];
+    this.appointments.filter((entry) => entry.barber === this.barber && entry.date === formattedDate).forEach((entry) => {
+      this.scheduleArray.forEach((value, index) => {
+        if (value.value == entry.hour ) {
+          reservedHours.push(value.value);
+        }
+      })
     })
-   })
 
-    console.log(date);
+    if(this.compateDates(date.value._d, new Date().toDateString())) {
+      this.scheduleArray.forEach((value, index) => {
+        if (parseInt(value.value) <= nowHour) {
+          reservedHours.push(value.value);
+        }
+      })
+    }
+
+   let uniqReservredHours = [...new Set(reservedHours)];
+
+    this.scheduleArray = this.scheduleArray.filter((value) => {
+      return !uniqReservredHours.includes(value.value);
+    })
+    reservedHours = 0;
   }
 
   onLogOut () {
     this.authService.signOutUser();
+  }
+
+
+  compateDates (datePickerDate : Date, objectDate: string) {
+    const datePickerMonth = datePickerDate.getMonth();
+    const datePickerYear = datePickerDate.getFullYear()
+    const datePickerDay = datePickerDate.getDate()
+    const objectDateMonth = new Date(objectDate).getMonth();
+    const objectDateYear =new Date(objectDate).getFullYear();
+    const objectDateDay = new Date(objectDate).getDate();
+    if(datePickerMonth === objectDateMonth && datePickerYear === objectDateYear && datePickerDay === objectDateDay) {
+      return true;
+    }
+    return false;
   }
 
 
