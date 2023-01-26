@@ -15,7 +15,7 @@
           </ng-container>
            <mat-form-field class="full-width">
               <mat-label>Email</mat-label>
-              <input  matInput  placeholder="Email" formControlName="email" name="email">
+              <input  matInput placeholder="Email" formControlName="email" name="email">
            </mat-form-field>
            <mat-form-field class="full-width">
               <mat-label>Password</mat-label>
@@ -25,8 +25,8 @@
         </form>
      </mat-card-content>
      <mat-card-actions>
-        <button  *ngIf="handleUser === 'createUser'" mat-raised-button  color="primary" (click)="onRegister()">Register</button>
-        <button  *ngIf="handleUser === 'loginUser'" mat-raised-button  color="primary" (click)="onLogin()">Login</button>
+        <button  *ngIf="handleUser === 'createUser'" mat-raised-button  color="primary" [disabled]="createAccountForm.invalid" (click)="onRegister()">Register</button>
+        <button  *ngIf="handleUser === 'loginUser'" mat-raised-button  color="primary" [disabled]="createAccountForm.invalid" (click)="onLogin()">Login</button>
      </mat-card-actions>
   </mat-card>
 </div>
