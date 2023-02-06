@@ -5,4 +5,5 @@ export interface AppointmentServiceObject {
   hour: string;
   name: string;
   service:string;
+  type?:string;
 }

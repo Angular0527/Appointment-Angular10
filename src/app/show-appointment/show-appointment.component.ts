@@ -16,6 +16,9 @@ import { MatSelect } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
 import { MatDatepickerInput } from '@angular/material/datepicker';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { selectAllApointments } from '../appointments/state/appointmentsState/appointments.selectors';
+import { deleteAppointment, updateAppointment } from '../appointments/state/appointmentsState/appointments.actions';
 
 const moment = _rollupMoment || _moment;
 
@@ -58,29 +61,32 @@ export class ShowAppointmentComponent implements OnInit {
   ];
   dataSource: any | undefined;
 
-  constructor(private scheduleService: ScheduleService, private authService: AuthService, private router: Router) {
+  constructor(private scheduleService: ScheduleService, private authService: AuthService, private router: Router, private store: Store) {
 
    }
 
   ngOnInit(): void {
     this.email = localStorage.getItem('email');
-    this.scheduleService.appointment.subscribe((response) => {
-      this.appointments = [];
-      this.backendResponse = response;
-      Object.values(response).forEach((val) => {
-        if (val.email === this.email) {
-          this.appointments.push(val);
-        }
-      })
-      const datePipe = new DatePipe('en-US');
-      const todayDate = datePipe.transform(new Date(),'yyyy-MM-dd') || ''
-      const filteredResult =  this.appointments.filter((entry) => entry.date >= todayDate && this.filterAppointemntsByHour(entry, todayDate, true))
-                                                .sort((a,b)=>new Date(a.date).getTime()- new Date(b.date).getTime());
-      this.dataSource = filteredResult
-      filteredResult.forEach(() => {
-        this.selectedValue.push();
-      })
-      this.scheduleArray = [...this.schedule];
+    this.store.select(selectAllApointments()).subscribe((response) => {
+      if(response.length > 0) {
+        this.appointments = [];
+        this.backendResponse = response[0];
+        Object.values(response[0]).forEach((val) => {
+          if (val.email === this.email) {
+            this.appointments.push(val);
+          }
+        })
+        const datePipe = new DatePipe('en-US');
+        const todayDate = datePipe.transform(new Date(),'yyyy-MM-dd') || ''
+        const filteredResult =  this.appointments.filter((entry) => entry.date >= todayDate && this.filterAppointemntsByHour(entry, todayDate, true))
+                                                  .sort((a,b)=>new Date(a.date).getTime()- new Date(b.date).getTime());
+        this.dataSource = filteredResult
+        filteredResult.forEach(() => {
+          this.selectedValue.push();
+        })
+        this.scheduleArray = [...this.schedule];
+      }
+
     })
   }
 
@@ -116,14 +122,12 @@ export class ShowAppointmentComponent implements OnInit {
   }
 
 
-  onDeleteEntry (entryData : any) {
+  onDeleteEntry (entryData : string) {
     const appointmentsData = [...this.appointments];
-    const objectKey = this.getEntryName(entryData);
+    const objectKey : any = this.getEntryName(entryData);
     const datePipe = new DatePipe('en-US');
     const todayDate = datePipe.transform(new Date(),'yyyy-MM-dd') || ''
-    this.scheduleService.deleteAppointment(objectKey).subscribe(() => {
-      this.getAppointemnts();
-    })
+    this.store.dispatch(deleteAppointment({data: objectKey}))
 
   };
 
@@ -166,8 +170,8 @@ export class ShowAppointmentComponent implements OnInit {
 
 
   onSaveEntry(element: any, index: number) {
-    const entryName = this.getEntryName(element);
-   let updatedObject = {
+    const entryName : string = this.getEntryName(element);
+   let updatedObject  = {
     barber: element.barber,
     date: this.dateChanged !== ''?  this.dateChanged : element.date,
     email: element.email,
@@ -175,11 +179,8 @@ export class ShowAppointmentComponent implements OnInit {
     name: element.name,
     service: element.service
    }
-   this.scheduleService.updateAppointment(updatedObject,entryName).subscribe((result) => {
-
-    this.getAppointemnts();
-    this.viewMode = 'normalMode'
-   })
+   this.store.dispatch(updateAppointment({id:entryName, data: updatedObject}))
+   this.viewMode = 'normalMode'
   }
 
   getAppointemnts() {

@@ -15,6 +15,10 @@ import * as _moment from 'moment';
 // tslint:disable-next-line:no-duplicate-imports
 import {default as _rollupMoment} from 'moment';
 import { DatePipe } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { createAppoitment, loadAppointments } from '../state/appointmentsState/appointments.actions';
+import { selectAllApointments } from '../state/appointmentsState/appointments.selectors';
+import { AppointmentsState } from '../state/appointmentsState/appointments.reducers';
 
 const moment : any = _rollupMoment || _moment;
 export interface Schedule {
@@ -58,7 +62,7 @@ export class ScheduleComponent implements OnInit , OnChanges {
     {value: '16', viewValue: '16-17'},
   ];
   scheduleFormGroup: FormGroup ;
-  constructor(private authService: AuthService, private scheduleService: ScheduleService,  private router: Router, private cd: ChangeDetectorRef) {
+  constructor(private scheduleService: ScheduleService,  private router: Router, private store: Store<any>) {
     this.scheduleFormGroup = new FormGroup({
       'name': new FormControl('', [Validators.required, Validators.minLength(5)]),
       'hour': new FormControl('', [Validators.required]),
@@ -87,8 +91,9 @@ export class ScheduleComponent implements OnInit , OnChanges {
 
   ngOnInit(): void {
     this.email = localStorage.getItem('email');
-    this.scheduleService.appointment.subscribe((response) => {
-      this.scheduleServiceResponse = response;
+  this.store.select(selectAllApointments()).subscribe((response) => {
+    if(response.length > 0 ) {
+      this.scheduleServiceResponse = response[0];
       this.scheduleArray = [...this.schedule];
       const nowHour = new Date().getHours();
       if(nowHour >= 16) {
@@ -98,8 +103,9 @@ export class ScheduleComponent implements OnInit , OnChanges {
         this.setSchedule(moment()._d);
         this.scheduleFormGroup.get('date')?.setValue(moment()._d)
       }
-      // this.setSchedule(moment()._d);
-    })
+    }
+
+  })
 
 
   }
@@ -136,7 +142,7 @@ export class ScheduleComponent implements OnInit , OnChanges {
     this.service;
     this.email;
 
-    const object = {
+    const object : any = {
       'name': name,
       'hour': hour,
       'date': updateDate,
@@ -149,12 +155,8 @@ export class ScheduleComponent implements OnInit , OnChanges {
     //   console.log(response);
     // })
     let test = [];
-    this.scheduleService.saveAppointment(object).subscribe((result) => {
-      const name = result.name;
-      const obj = {...this.scheduleServiceResponse , [name] : object};
-      this.scheduleService.appointment.next(obj)
-      this.router.navigate(['/showAppointments']);
-    });
+    this.store.dispatch(createAppoitment(object))
+    this.router.navigate(['/showAppointments']);
 
   }
 
@@ -171,10 +173,6 @@ setSchedule (date: Date ) {
       })
     }
   })
-  // this.scheduleArray = this.scheduleArray.filter((value) => {
-  //   return !reservedHours.includes(value.value);
-  // })
-  // reservedHours = [];
 
   if (this.compateDates(date, new Date().toDateString())) {
     const nowHour = new Date().getHours()

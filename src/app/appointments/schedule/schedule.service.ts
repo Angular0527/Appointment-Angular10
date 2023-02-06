@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { AppointmentServiceObject } from 'src/app/appointment-service-object';
 
 @Injectable({
@@ -14,7 +14,7 @@ export class ScheduleService {
    return  this.http.put('https://angular-appointments-app-default-rtdb.europe-west1.firebasedatabase.app/schedule.json',[data])
   }
 
-  saveAppointment(data: object) {
+  saveAppointment(data: object): Observable<any> {
    return this.http.post<AppointmentServiceObject>('https://angular-appointments-app-default-rtdb.europe-west1.firebasedatabase.app/schedule.json',data);
   }
 
@@ -26,7 +26,7 @@ export class ScheduleService {
     return this.http.delete<AppointmentServiceObject>(`https://angular-appointments-app-default-rtdb.europe-west1.firebasedatabase.app/schedule/${key}.json`);
   }
 
-  updateAppointment (data: object, key: string) {
+  updateAppointment (data: object, key: String) {
     return this.http.patch<AppointmentServiceObject>(`https://angular-appointments-app-default-rtdb.europe-west1.firebasedatabase.app/schedule/${key}.json`,data);
   }
 }

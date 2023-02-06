@@ -4,6 +4,8 @@ import { Route, Router } from '@angular/router';
 import { ScheduleService } from '../appointments/schedule/schedule.service';
 import { AuthService } from '../auth.service';
 import { first} from 'rxjs';
+import { Store } from '@ngrx/store';
+import { loadAppointments } from '../appointments/state/appointmentsState/appointments.actions';
 
 @Component({
   selector: 'app-create-user',
@@ -15,7 +17,7 @@ export class CreateUserComponent implements OnInit {
   createAccountForm: FormGroup ;
   email = new FormControl('', [Validators.required, Validators.email]);
   hide = true;
-  constructor(private authService: AuthService, private router: Router, private scheduleService: ScheduleService) {
+  constructor(private authService: AuthService, private router: Router, private scheduleService: ScheduleService, private store: Store) {
     this.createAccountForm = new FormGroup({
     'email': new FormControl('', [Validators.required, Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]),
     'password':new FormControl('', [Validators.required, Validators.minLength(5)]),
@@ -32,11 +34,7 @@ onRegister() {
   const password = this.createAccountForm.value.password
   this.authService.createUser(email,password).then((result) => {
     this.authService.authUser(result,password);
-    this.scheduleService.getAppointments().pipe(first()).subscribe((result) => {
-      if(result !== null) {
-        this.scheduleService.appointment.next(result);
-      }
-    })
+    this.store.dispatch(loadAppointments())
     this.router.navigate(['/appointments']);
   })
   .catch((error) => {
@@ -51,11 +49,7 @@ onLogin() {
   const password = this.createAccountForm.value.password;
   this.authService.signInUser(email,password).then((result) => {
     this.authService.authUser(result,password);
-    this.scheduleService.getAppointments().pipe(first()).subscribe((result) => {
-      if(result !== null) {
-        this.scheduleService.appointment.next(result);
-      }
-    })
+    this.store.dispatch(loadAppointments())
     this.router.navigate(['/appointments']);
   }).catch((error) => {
     console.log(error)

@@ -46,6 +46,11 @@ import {MatSelectModule} from '@angular/material/select';
 import { ScheduleComponent } from './appointments/schedule/schedule.component';
 import { ShowAppointmentComponent } from './show-appointment/show-appointment.component';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import { StoreModule } from '@ngrx/store';
+import { StoreDevtools, StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { appointmentReducer } from './appointments/state/appointmentsState/appointments.reducers';
+import { EffectsModule } from '@ngrx/effects';
+import { AppointmentsEffects } from './appointments/state/appointmentsState/appointments.effects';
 
 
 const appRoutes : Routes =  [
@@ -103,7 +108,13 @@ const appRoutes : Routes =  [
     MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    StoreDevtoolsModule.instrument({
+      autoPause:true,
+    }),
+    StoreModule.forRoot({}),
+    StoreModule.forFeature(appointmentReducer),
+    EffectsModule.forRoot([AppointmentsEffects])
   ],
   providers: [
     ScreenTrackingService,UserTrackingService,{provide:HTTP_INTERCEPTORS,useClass:AuthInterceptorService, multi:true},
