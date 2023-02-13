@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { selectAllApointments } from '../appointments/state/appointmentsState/appointments.selectors';
 import { deleteAppointment, updateAppointment } from '../appointments/state/appointmentsState/appointments.actions';
+import { logoutUser } from '../appointments/state/authState/auth.actions';
 
 const moment = _rollupMoment || _moment;
 
@@ -271,7 +272,7 @@ export class ShowAppointmentComponent implements OnInit {
   }
 
   onLogOut () {
-    this.authService.signOutUser();
+    this.store.dispatch(logoutUser())
   }
 
 

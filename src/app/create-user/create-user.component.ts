@@ -6,6 +6,8 @@ import { AuthService } from '../auth.service';
 import { first} from 'rxjs';
 import { Store } from '@ngrx/store';
 import { loadAppointments } from '../appointments/state/appointmentsState/appointments.actions';
+import { loginUser, registerUser } from '../appointments/state/authState/auth.actions';
+import { selectAuthErrorMessage, selectAuthStatus, selectAuthToken } from '../appointments/state/authState/auth.selectors';
 
 @Component({
   selector: 'app-create-user',
@@ -32,37 +34,41 @@ export class CreateUserComponent implements OnInit {
 onRegister() {
   const email = this.createAccountForm.value.email;
   const password = this.createAccountForm.value.password
-  this.authService.createUser(email,password).then((result) => {
-    this.authService.authUser(result,password);
-    this.store.dispatch(loadAppointments())
-    this.router.navigate(['/appointments']);
+  this.store.dispatch(registerUser({email:email , password:password}))
+  this.store.select(selectAuthStatus()).subscribe((data) => {
+    if(data === 'successs') {
+      this.store.dispatch(loadAppointments())
+      this.router.navigate(['/appointments']);
+    }
+    else if(data === 'error') {
+      this.store.select(selectAuthErrorMessage()).subscribe((error) => {
+        this.errorMsgText = "User Already Exists, try to login"
+        this.authFailed = true;
+      })
+    }
   })
-  .catch((error) => {
-    this.errorMsgText = "User Already Exists, try to login"
-    this.authFailed = true;
-  });
-
 }
 
 onLogin() {
   const email = this.createAccountForm.value.email;
   const password = this.createAccountForm.value.password;
-  this.authService.signInUser(email,password).then((result) => {
-    this.authService.authUser(result,password);
-    this.store.dispatch(loadAppointments())
-    this.router.navigate(['/appointments']);
-  }).catch((error) => {
-    console.log(error)
-    if(error.message.split('not-found').length > 1) {
-      this.errorMsgText = "User doesn't exist, try to register"
-    } else {
-      this.errorMsgText = "Invalid username or password"
+  this.store.dispatch(loginUser({email:email , password:password}))
+  this.store.select(selectAuthStatus()).subscribe((data) => {
+    if(data === 'successs') {
+      this.store.dispatch(loadAppointments())
+      this.router.navigate(['/appointments']);
     }
-
-    this.authFailed = true;
-  });
-  setInterval(() => this.authService.signInUser().then((result) => {
-    this.authService.authUser(result,password)}),3540000)
+    else if (data === 'error') {
+      this.store.select(selectAuthErrorMessage()).subscribe((err) => {
+        if(err.split('not-found').length > 1) {
+              this.errorMsgText = "User doesn't exist, try to register"
+            } else {
+              this.errorMsgText = "Invalid username or password"
+            }
+            this.authFailed = true;
+      })
+    }
+  })
 }
 
 

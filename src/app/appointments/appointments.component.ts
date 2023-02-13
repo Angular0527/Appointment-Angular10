@@ -3,10 +3,12 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatSelectionList } from '@angular/material/list';
 import { MatTabGroup } from '@angular/material/tabs';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { AuthService } from '../auth.service';
 import { Barber } from './appointemnts.inteface';
 import { AppointmentsService } from './appointments.service';
 import { ScheduleService } from './schedule/schedule.service';
+import { logoutUser } from './state/authState/auth.actions';
 
 
 
@@ -26,7 +28,7 @@ export class AppointmentsComponent implements OnInit {
   selected = 0;
 
 
-  constructor(private appointmentsService: AppointmentsService, private scheduleService: ScheduleService, private router: Router, private authService: AuthService) {
+  constructor(private appointmentsService: AppointmentsService, private scheduleService: ScheduleService, private router: Router, private authService: AuthService, private store: Store) {
   }
 
   ngOnInit(): void {
@@ -62,7 +64,7 @@ export class AppointmentsComponent implements OnInit {
   }
 
   onLogOut () {
-    this.authService.signOutUser();
+    this.store.dispatch(logoutUser())
   }
 
 

@@ -49,8 +49,10 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtools, StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { appointmentReducer } from './appointments/state/appointmentsState/appointments.reducers';
+import {authReducer} from './appointments/state/authState/auth.reducers'
 import { EffectsModule } from '@ngrx/effects';
 import { AppointmentsEffects } from './appointments/state/appointmentsState/appointments.effects';
+import { AuthEffects } from './appointments/state/authState/auth.effects';
 
 
 const appRoutes : Routes =  [
@@ -114,7 +116,8 @@ const appRoutes : Routes =  [
     }),
     StoreModule.forRoot({}),
     StoreModule.forFeature(appointmentReducer),
-    EffectsModule.forRoot([AppointmentsEffects])
+    StoreModule.forFeature(authReducer),
+    EffectsModule.forRoot([AppointmentsEffects,AuthEffects])
   ],
   providers: [
     ScreenTrackingService,UserTrackingService,{provide:HTTP_INTERCEPTORS,useClass:AuthInterceptorService, multi:true},
