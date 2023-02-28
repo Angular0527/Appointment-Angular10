@@ -53,6 +53,7 @@ import {authReducer} from './appointments/state/authState/auth.reducers'
 import { EffectsModule } from '@ngrx/effects';
 import { AppointmentsEffects } from './appointments/state/appointmentsState/appointments.effects';
 import { AuthEffects } from './appointments/state/authState/auth.effects';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 
 const appRoutes : Routes =  [
@@ -117,7 +118,13 @@ const appRoutes : Routes =  [
     StoreModule.forRoot({}),
     StoreModule.forFeature(appointmentReducer),
     StoreModule.forFeature(authReducer),
-    EffectsModule.forRoot([AppointmentsEffects,AuthEffects])
+    EffectsModule.forRoot([AppointmentsEffects,AuthEffects]),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ],
   providers: [
     ScreenTrackingService,UserTrackingService,{provide:HTTP_INTERCEPTORS,useClass:AuthInterceptorService, multi:true},
