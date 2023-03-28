@@ -26,5 +26,16 @@
         ]
       }
     }
-  ]
+  ],
+  "dataGroups": [{
+    "name": "api-performance",
+    "urls": [
+      "https://angular-appointments-app-default-rtdb.europe-west1.firebasedatabase.app/schedule.json"
+    ],
+    "cacheConfig": {
+      "maxSize": 10000,
+      "maxAge": "3d",
+      "strategy": "performance"
+    }
+  }]
 }
